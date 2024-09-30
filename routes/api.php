@@ -5,6 +5,17 @@ use App\Http\Controllers\Backend\API\AddressController;
 use App\Http\Controllers\Backend\API\DashboardController;
 use App\Http\Controllers\Backend\API\NotificationsController;
 use App\Http\Controllers\Backend\API\SettingController;
+use App\Http\Controllers\Api\PatientController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PatientSubscriptionController;
+use App\Http\Controllers\Appointment2Controller;
+use App\Http\Controllers\NewSubscriptionController;
+use App\Http\Controllers\PaystackSubscriptionController;
+
+
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -15,8 +26,20 @@ use App\Http\Controllers\Backend\API\SettingController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+// routes/api.php
+
+  // Initialize the subscription
+  // Webhook to handle payment notification from Paystack
+Route::post('/paystack/webhook', [PaystackSubscriptionController::class, 'webhook'])->name('subscription.callback');
+Route::post('/paystacksubscribe', [PaystackSubscriptionController::class, 'subscribe']);
+Route::get('getservices', [NewSubscriptionController::class, 'getserviceapi']);
+Route::post('/appointments2', [Appointment2Controller::class, 'createAppointment']);
+
+Route::post('/patient-subscriptions', [PatientSubscriptionController::class, 'store']);
+Route::get('available-subscriptions', [PatientSubscriptionController::class, 'listSubscriptions']);
+// Route::post('subscribe', [PatientSubscriptionController::class, 'subscribe']);
+Route::post('patients/register', [PatientController::class, 'register']);
+Route::get('patients/verify/{token}', [PatientController::class, 'verify']);
 
 Route::get('user-detail', [AuthController::class, 'userDetails']);
 

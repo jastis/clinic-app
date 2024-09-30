@@ -43,7 +43,6 @@ return [
     'clinicservice_delete' => 'Clinic Service Deleted Successfully',
     'doctor_list' => 'Doctor List',
     'doctor_title' => 'Doctor',
-    'nurse_title' => 'Nurse ',
     'doctor_update' => 'Doctor Status Updated',
     'doctor_delete' => 'doctor Deleted Successfully',
     'clinic_image' => 'Image',
@@ -98,7 +97,7 @@ return [
     'sessions' => 'Sessions',
     'closed' => 'Closed',
     'lbl_encounter_date'=>'Encounter Date',
-    'about_doctor' => 'Profile',
+    'about_doctor' => 'About Doctor',
     'about' => 'About',
     'total_appointment' => 'Total Appointments',
     'specialization' => 'Specialization',
@@ -149,6 +148,7 @@ return [
     'lbl_select_template'=>'Select encounter Template',
     'clinic_session'=>'Clinic Sessions',
     'doctor_session'=>'Doctor Session',
+    'nurse_session'=>'Nurse Session',
     'edit_biling_details'=>'Edit Billing Data',
     'add_biling_details'=>'Add Billing Data',
     'generate_invoice'=>'Generate Invoice',
@@ -180,7 +180,4 @@ return [
     'price_update' => 'Price Updated Successfully',
     'clinic_closed' => 'Clinic Closed',
     'unavailable' => 'Unavailable',
-    'lbl_certificate'=>'Certificate',
-    'nurse_list'=>'Nurses List',
-   ' nurse_title'=>'Nurses Details'
 ];

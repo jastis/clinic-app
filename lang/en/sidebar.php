@@ -57,8 +57,7 @@ return [
     'clinic_center' => 'Clinic Centers',
     'center' =>'Centers',
     'doctor' => 'Doctors',
-    'doctor-nurse'=>'Doctors & Nurses',
-    'nurse'=> 'Nurses',
+    'subscription' => 'Subscription',
     'appointment' => 'Appointment list',
     'other_Clinic' => 'other clinic child menu list',
     'category' => 'Category',
@@ -72,9 +71,11 @@ return [
     'staffs_payouts' => 'Staffs Payouts',
     'staffs_services' => 'Staffs Services',
     'order_report' => 'Order Report',
-    'clinic' => 'Clinics',
+    'clinic' => 'Location',
     'constant' => 'Constants',
-    'Subscriptions' => 'Subscriptions',
+    'subscription' => 'Manage Subscriptions',
+    'assigndoctor' => 'Pending Appointments',
+    'doctorprescriptions' => 'Doctors Prescriptions',
     'my_account' => 'My Account',
     'sub_list' => 'Subscription List',
     'Plan_List' => 'Plan List',
@@ -97,6 +98,6 @@ return [
     'vendor_earning' => 'Clinic Admin Earning',
     'doctor_payout' => 'Doctor Payout',
     'vendor_payout'=> 'Clinic Admin Payout',
-
+    
     'problems' => 'Problems',
 ];
