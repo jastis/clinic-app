@@ -19,7 +19,7 @@ export const STATE_URL = (id) => {return {path: `state/index_list?country_id=${i
 export const CITY_URL = (id) => {return {path: `city/index_list?state_id=${id}`, method: 'GET'}}
 
 export const CLINIC_LIST = ({clinic_id = ''}) => {return { path: `clinics/index_list?clinicId=${clinic_id}`, method: 'GET' }}
-export const USER_LIST = () => {return {path: `${MODULE}/user-list/notinh`, method: 'GET'}}
+export const USER_LIST = () => {return {path: `${MODULE}/user-list/`, method: 'GET'}}
 
 
 

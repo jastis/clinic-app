@@ -16,6 +16,10 @@ use App\Http\Controllers\SearchController;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HolidayController;
+use App\Http\Controllers\SubscriptionController2;
+use App\Http\Controllers\NewSubscriptionController;
+use App\Http\Controllers\DoctorAssignmentController;
+use App\Http\Controllers\PrescriptionController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,6 +30,41 @@ use App\Http\Controllers\HolidayController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+
+// Route::prefix('doctor')->middleware('auth')->group(function () {
+    Route::get('assigned-appointments', [PrescriptionController::class, 'index'])->name('doctor.prescriptions.index');
+    Route::get('prescription/create/{appointment}', [PrescriptionController::class, 'create'])->name('doctor.prescriptions.create');
+    Route::post('prescription/store/{appointment}', [PrescriptionController::class, 'store'])->name('doctor.prescriptions.store');
+// });
+// 
+
+// Doctor Assignment
+Route::get('/admin/unassigned-appointments', [DoctorAssignmentController::class, 'showUnassignedAppointments'])->name('admin.unassigned.appointments');
+Route::post('/admin/assign-doctor/{appointmentId}', [DoctorAssignmentController::class, 'assignDoctor'])->name('assign.doctor');
+
+// Appointment Confirmation
+Route::post('/doctor/confirm-appointment/{assignmentId}', [DoctorAssignmentController::class, 'confirmAppointment'])->name('confirm.appointment');
+
+// Submit Prescription
+Route::post('/doctor/submit-prescription/{appointmentId}', [DoctorAssignmentController::class, 'submitPrescription'])->name('submit.prescription');
+
+Route::get('/newsubscriptions', [NewSubscriptionController::class, 'index'])->name('newsubscriptions.index');
+
+Route::post('/newservices', [NewSubscriptionController::class, 'storeService'])->name('newservices.store');
+Route::get('/newservices/{service}/edit', [NewSubscriptionController::class, 'editService'])->name('newservices.edit');
+Route::put('/newservices/{service}', [NewSubscriptionController::class, 'updateService'])->name('newservices.update');
+Route::delete('/newservices/{service}', [NewSubscriptionController::class, 'destroyService'])->name('newservices.destroy');
+
+Route::post('/packages', [NewSubscriptionController::class, 'storePackage'])->name('packages.store');
+Route::get('/packages/{package}/edit', [NewSubscriptionController::class, 'editPackage'])->name('packages.edit');
+Route::put('/packages/{package}', [NewSubscriptionController::class, 'updatePackage'])->name('packages.update');
+Route::delete('/packages/{package}', [NewSubscriptionController::class, 'destroyPackage'])->name('packages.destroy');
+
+
+
+
+Route::resource('subscriptions', SubscriptionController2::class);
 
 // Auth Routes
 require __DIR__ . '/auth.php';
@@ -42,10 +81,10 @@ Route::get('/', function () {
 
         return redirect(RouteServiceProvider::DOCTOR_LOGIN_REDIRECT);
     } 
-    // else if (auth()->user()->hasRole('user')) {
+    else if (auth()->user()->hasRole('user')) {
 
-    //     return redirect(RouteServiceProvider::USER_LOGIN_REDIRECT);
-    // } 
+        return redirect(RouteServiceProvider::USER_LOGIN_REDIRECT);
+    } 
     else if (auth()->user()->hasRole('receptionist')) {
 
         return redirect(RouteServiceProvider::RECEPTIONIST_LOGIN_REDIRECT);

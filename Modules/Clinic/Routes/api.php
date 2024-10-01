@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Modules\Clinic\Http\Controllers\API\ClinicesController;
 use Modules\Clinic\Http\Controllers\API\DoctorController;
+use App\Http\Controllers\PatientSubscriptionController;
 /*
     |--------------------------------------------------------------------------
     | API Routes
@@ -14,7 +15,8 @@ use Modules\Clinic\Http\Controllers\API\DoctorController;
     | is assigned the "api" middleware group. Enjoy building your API!
     |
 */
-
+Route::get('available-subscriptions', [PatientSubscriptionController::class, 'listSubscriptions']);
+Route::post('subscribe', [PatientSubscriptionController::class, 'subscribe']);
 Route::get('get-service-list', [ClinicesController::class, 'ServiceList']);
 Route::get('get-doctor-list', [DoctorController::class, 'DoctorList']);
 Route::get('get-category-list', [ClinicesController::class, 'CategoryList']);  

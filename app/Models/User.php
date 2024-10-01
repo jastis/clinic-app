@@ -182,7 +182,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         return $this->hasMany(ServiceEmployee::class, 'employee_id');
     }
 
-
+ 
 
     public function wishlist()
     {
@@ -264,7 +264,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         return $this->hasMany(Appointment::class, 'doctor_id');
     }
 
-
+   
     public function receptionist()
     {
         return $this->hasOne(Receptionist::class, 'receptionist_id');
@@ -286,7 +286,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
 
 
 
-
+   
 
     public function  scopesetRoleReceptionist($query, $user) {
 
@@ -297,28 +297,28 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
 
             if(multiVendor() == 0) {
 
-
+                    
                 $user_ids = User::role(['admin', 'demo_admin'])->pluck('id');
 
                  $query=$query->whereHas('receptionist', function ($qry) use ($user_ids) {
                     $qry->whereIn('vendor_id', $user_ids);
                 });
-
+                  
             }
 
             return $query;
         }
-
-         if($user->hasRole('vendor')) {
-
+ 
+         if($user->hasRole('vendor')) {  
+ 
             $query=$query->whereHas('receptionist', function ($qry) use ($user_id) {
                 $qry->where('vendor_id', $user_id);
             });
-
+             
              return $query;
-
+ 
          }
-
+ 
          if(auth()->user()->hasRole('doctor')) {
 
             User::where('id',$user_id)->with('doctorclinic');
@@ -326,31 +326,31 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
             $clinic_ids = $user->doctorclinic ? $user->doctorclinic->clinic_id : [];
 
             $active_clinic = Clinics::SetRole(auth()->user())->with('clinicdoctor','specialty','clinicdoctor','receptionist')->whereIn('id',$clinic_ids)->pluck('id')->toArray();
-
+ 
             $query=$query->whereHas('receptionist', function ($qry) use ($active_clinic) {
                 $qry->whereIn('clinic_id', $active_clinic);
             });
-
+  
             return $query;
-
+           
         }
-
+ 
         if (auth()->user()->hasRole('receptionist')) {
 
             $receptionist=Receptionist::where('receptionist_id',$user_id)->first();
-
+     
             $user_id=$receptionist->vendor_id;
 
-            return $query->where('id',$user_id);
-
+            return $query->where('id',$user_id); 
+    
         }
-
+ 
         return $query;
-
+        
     }
 
 
-
+    
     public function scopesetRolePatients($query, $user)
     {
 
@@ -358,15 +358,15 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
 
        if(auth()->user()->hasRole(['admin', 'demo_admin'])) {
 
-            return $query;
+            return $query;   
        }
 
-        if($user->hasRole('vendor')) {
+        if($user->hasRole('vendor')) {  
 
             $query = $query->with('appointment')->whereHas('appointment.cliniccenter', function ($qry) use ($user_id) {
                 $qry->where('vendor_id', $user_id);
             });
-
+            
             return $query;
 
         }
@@ -377,8 +377,8 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
             if(multiVendor() == 0) {
 
                 $doctor=Doctor::where('doctor_id',$user_id)->first();
-
-                $vendorId = $doctor->vendor_id;
+ 
+                $vendorId = $doctor->vendor_id; 
 
                 $query = $query->where('status', 1)
                   ->whereHas('appointment', function ($qry) use ($user_id,$vendorId) {
@@ -387,24 +387,24 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
                             $subQry->where('vendor_id', $vendorId);
                         });
                 });
-
+ 
             }else{
                 $query = $query->where('status', 1)->whereHas('appointment', function ($qry) use ($user_id) {
                     $qry->where('doctor_id', $user_id);
                 });
            }
-
+ 
            return $query;
-
+          
        }
 
        if (auth()->user()->hasRole('receptionist')) {
 
 
             $Receptionist=Receptionist::where('receptionist_id',$user_id)->first();
-
+    
             $vendorId=$Receptionist->vendor_id;
-
+    
             $clinic_id=$Receptionist->clinic_id;
 
 
@@ -415,18 +415,18 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
                     ->where('clinic_id', $clinic_id);
             });
 
-
+   
            }else{
 
                 $query = $query->with('appointment')->whereHas('appointment.cliniccenter', function ($qry) use ($clinic_id) {
-
+            
                     $qry->where('clinic_id', $clinic_id);
                 });
 
            }
 
-           return $query;
-
+           return $query; 
+   
        }
 
 
@@ -443,7 +443,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
 
            if (multiVendor() == "0") {
 
-
+                
             $user_ids = User::role(['admin', 'demo_admin'])->pluck('id');
 
             $query=$query->whereHas('doctor', function ($qry) use ($user_ids) {
@@ -461,17 +461,17 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
                     });;
                 }
             ]);
-
+   
            }else{
 
                $query=$query->withCount(['doctorclinic', 'doctorsession as doctorsession_count' => function ($query) {
                 $query->select(DB::raw('COUNT(DISTINCT clinic_id) as doctorsession_count'));
             }]);
            }
-
+ 
        }
 
-        if($user->hasRole('vendor')) {
+        if($user->hasRole('vendor')) {  
 
             $query=$query->whereHas('doctor', function ($qry) use ($user_id) {
                 $qry->where('vendor_id', $user_id) ;
@@ -492,21 +492,11 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         if(auth()->user()->hasRole('doctor')) {
 
         //    $query=$query->whereHas('doctor', function ($qry) use ($user_id) {
-        //        $qry->where('doctor_id',$user_id)->withCount(['doctorclinic']);
+        //        $qry->where('doctor_id',$user_id)->withCount(['doctorclinic']); 
         //    });
            $query = $query->where('id', $user_id)->withCount(['doctorclinic', 'doctorsession as doctorsession_count' => function ($query)  {
             $query->select(DB::raw('COUNT(DISTINCT clinic_id) as doctorsession_count'));
-        }])->whereNull('deleted_at');
-       }
-
-       if(auth()->user()->hasRole('nurse')) {
-
-        //    $query=$query->whereHas('doctor', function ($qry) use ($user_id) {
-        //        $qry->where('doctor_id',$user_id)->withCount(['doctorclinic']);
-        //    });
-           $query = $query->where('id', $user_id)->withCount(['doctorclinic', 'doctorsession as doctorsession_count' => function ($query)  {
-            $query->select(DB::raw('COUNT(DISTINCT clinic_id) as doctorsession_count'));
-        }])->whereNull('deleted_at');
+        }])->whereNull('deleted_at'); 
        }
 
        if (auth()->user()->hasRole('receptionist')) {
@@ -519,7 +509,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
              $clinicId = $Receptionist->clinic_id;
 
             $query = $query->whereHas('doctor', function ($qry) use ($vendorId) {
-                $qry->where('vendor_id',$vendorId);
+                $qry->where('vendor_id',$vendorId); 
                })
                ->withCount(['doctorclinic' => function ($query) use ($clinicId) {
                     $query->where('clinic_id', $clinicId);
@@ -530,8 +520,8 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
             ])->whereHas('doctorclinic', function ($qry) use ($clinicId) {
                 $qry->where('clinic_id', $clinicId);
             });
-
-
+   
+   
            }else{
 
             //    $query = $query->whereHas('doctorclinic.clinics', function ($qry) use ($user_id) {
@@ -551,11 +541,11 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
                 ])->whereHas('doctorclinic', function ($qry) use ($clinicId) {
                     $qry->where('clinic_id', $clinicId);
                 });
-
+               
             }
 
            }
-
+   
        }
 
 

@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-//use Modules\Product\Http\Controllers\Backend\API\BrandsController;
+// use Modules\Product\Http\Controllers\Backend\API\BrandsController;
 use Modules\Product\Http\Controllers\Backend\API\CartController;
 use Modules\Product\Http\Controllers\Backend\API\CategoryController;
 use Modules\Product\Http\Controllers\Backend\API\DashboardController;
@@ -14,7 +14,7 @@ use Modules\Product\Http\Controllers\Backend\API\WishListController;
 Route::get('get-product-category', [CategoryController::class, 'categoryList']);
 Route::get('get-product-list', [ProductsController::class, 'ProductList']);
 Route::get('product_detail', [ProductsController::class, 'product_detail']);
-//Route::get('product-brand', [BrandsController::class, 'product_brand']);
+// Route::get('product-brand', [BrandsController::class, 'product_brand']);
 Route::get('product-unit', [UnitsController::class, 'product_unit']);
 Route::get('product-dashboard', [DashboardController::class, 'productDashboard']);
 Route::get('get-review-list', [ReviewController::class, 'getReviewList']);
