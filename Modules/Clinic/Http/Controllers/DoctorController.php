@@ -103,6 +103,62 @@ class DoctorController extends Controller
         return view('clinic::backend.doctor.index', compact('filter','vendor','module_action', 'module_title','create_title','columns', 'customefield', 'export_import', 'export_columns','clinic', 'export_url'));
 
     }
+
+    public function nurse_index(Request $request)
+    {
+        $module_action = 'List';
+        $columns = CustomFieldGroup::columnJsonValues(new User());
+        $customefield = CustomField::exportCustomFields(new User());
+        $filter = [
+            'status' => $request->status,
+        ];
+        $user = User::role('nurse')->SetRole(auth()->user())->with('doctor', 'doctorclinic')->get();
+        $clinic = Clinics::SetRole(auth()->user())->with('clinicdoctor','specialty','clinicdoctor','receptionist')->get();
+        $vendor =User::where('user_type','vendor')->get();
+
+        $module_title = 'clinic.nurse_list';
+        $create_title = 'clinic.nurse_title';
+        $module_name = 'nurse';
+
+        view()->share([
+            'module_title' => $module_title,
+            'module_icon' => 'fa-regular fa-sun',
+            'module_name' => $module_name,
+            'module_path' => 'clinic::backend',
+        ]);
+        $export_import = true;
+        $export_columns = [
+            [
+                'value' => 'Name',
+                'text' => __('service.lbl_name'),
+            ],
+            [
+                'value' => 'mobile',
+                'text' =>  __('clinic.lbl_phone_number'),
+            ],
+            [
+                'value' => 'email',
+                'text' => __('appointment.lbl_email'),
+            ],
+            [
+                'value' => 'Clinic Center',
+                'text' => __('clinic.lbl_clinic_center'),
+            ],
+
+            [
+                'value' => 'varification_status',
+                'text' => __('clinic.lbl_verification_status'),
+            ],
+            [
+                'value' => 'status',
+                'text' => __('clinic.lbl_status'),
+            ],
+        ];
+        $export_url = route('backend.doctor.export');
+
+        return view('clinic::backend.doctor.index', compact('filter','vendor','module_action', 'module_title','create_title','columns', 'customefield', 'export_import', 'export_columns','clinic', 'export_url'));
+
+    }
     public function index_list(Request $request)
     {
         $term = trim($request->q);
@@ -254,22 +310,22 @@ class DoctorController extends Controller
 
                 $availableSlot = $timeSlots;
 
-                if ($carbonDate == $currentDate) {      
+                if ($carbonDate == $currentDate) {
                     $todaytimeSlots = [];
                     $currentDateTime = Carbon::now($timezone);
                     foreach ($timeSlots as $slot) {
                         $slotTime = Carbon::parse($slot, $timezone);
-            
+
                         if ($slotTime->greaterThan(Carbon::parse($currentDateTime,$timezone))) {
 
                             $todaytimeSlots[] = $slotTime->format('H:i');
                         }
-                    
+
                     }
                     $availableSlot = $todaytimeSlots;
                 }
 
-            
+
                 $clinic_holiday = Holiday::where('clinic_id', $request->clinic_id)
                 ->where('date', $request->appointment_date)
                 ->first();
@@ -278,12 +334,12 @@ class DoctorController extends Controller
                 if ($clinic_holiday) {
                     $holidayStartTime =  Carbon::parse($doctorSession->start_time, $timezone);
                     $holidayEndTime = Carbon::parse($clinic_holiday->end_time,$timezone);
-    
+
                     $availableSlot = array_filter($availableSlot, function ($slot) use ($holidayStartTime, $holidayEndTime, $timezone) {
                         $slotTime = Carbon::parse($slot, $timezone);
                         return !($slotTime->between($holidayStartTime, $holidayEndTime));
                     });
-    
+
                     $availableSlot = array_values($availableSlot);
                 }
 
@@ -299,13 +355,13 @@ class DoctorController extends Controller
                         $slotTime = Carbon::parse($slot, $timezone);
                         return !($slotTime->between($holidayStartTime, $holidayEndTime));
                     });
-    
+
                     $availableSlot = array_values($availableSlot);
                 }
-    
+
 
                 $appointmentData = Appointment::where('appointment_date', $request->appointment_date)->where('doctor_id',$request->doctor_id)->where('status','!=','cancelled')->get();
-            
+
 
                 $bookedSlots = [];
 
@@ -316,7 +372,7 @@ class DoctorController extends Controller
                     $duration = $appointment->duration;
 
                     $endTime = $startTime + ($duration * 60);
-                     
+
                     $startTime=$startTime-($duration * 60);
 
                     while ($startTime < $endTime) {
@@ -328,7 +384,7 @@ class DoctorController extends Controller
                 $availableSlot = array_values($availableSlotTime);
 
             }
-    
+
         }
 
         $message='messages.avaibleslot';
@@ -339,7 +395,7 @@ class DoctorController extends Controller
 
 
         if ($request->is('api/*')) {
-            
+
             return response()->json(['message' => $message, 'data' => $availableSlot, 'status' => true], 200);
 
         } else {
@@ -347,7 +403,7 @@ class DoctorController extends Controller
             return response()->json($data);
         }
 
-      
+
     }
 
 
@@ -390,9 +446,9 @@ class DoctorController extends Controller
         $userId = auth()->id();
         $query = User::role('doctor')->SetRole(auth()->user())->with('doctor', 'doctorclinic');
 
-     
+
         $filter = $request->filter;
-   
+
         if (isset($filter)) {
 
             if (isset($filter['clinic_name'])) {
@@ -407,25 +463,25 @@ class DoctorController extends Controller
             }
             if(isset($filter['doctor_name'])) {
                 $fullName = $filter['doctor_name'];
-                
+
                 $query->where(function($query) use ($fullName) {
                     $query->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%$fullName%"]);
                 });
             }
             if(isset($filter['email'])) {
-                
+
                 $query->where('email',$filter['email']);
             }
             if(isset($filter['contact'])) {
-                
+
                 $query->where('mobile',$filter['contact']);
             }
             if(isset($filter['gender'])) {
-                
+
                 $query->where('gender',$filter['gender']);
             }
             if(isset($filter['vendor_id'])) {
-                
+
                 $query->whereHas('doctor', function ($query) use ($filter) {
                             $query->where('vendor_id', $filter['vendor_id']);
                 });
@@ -463,7 +519,163 @@ class DoctorController extends Controller
             })
 
             ->editColumn('clinic_id', function ($data) {
-              
+
+                return "<span class='bg-primary-subtle rounded tbl-badge'> <button type='button' data-assign-module='" . $data->id . "' data-assign-target='#clinic-list' data-assign-event='clinic_list' class='btn btn-sm p-0 text-primary' data-bs-toggle='tooltip' title='Clinic List'><b>$data->doctorclinic_count </b> </button></span>";
+            })
+            ->orderColumn('clinic_id', function ($query, $order) {
+                $query->whereHas('doctor', function ($query) use ($order){
+                    $query->whereHas('doctorclinic', function ($query) use ($order) {
+                        $query->whereHas('clinics', function ($query) use ($order) {
+                            $query->orderBy('name', $order);
+                        });
+                    });
+                });
+            }, 1)
+            ->filterColumn('doctor_id', function ($query, $keyword) {
+                if (!empty($keyword)) {
+                    $query->where('first_name', 'like', '%' . $keyword . '%')->orWhere('last_name', 'like', '%' . $keyword . '%')->orWhere('email', 'like', '%' . $keyword . '%');
+                }
+            })
+            ->orderColumn('doctor_id', function ($query, $order) {
+                $query->orderByRaw("CONCAT(first_name, ' ', last_name) $order");
+            }, 1)
+            ->editColumn('image', function ($data) {
+                return "<img src='" . $data->profile_image . "'class='avatar avatar-50 rounded-pill'>";
+            })
+
+            ->editColumn('email_verified_at', function ($data) {
+
+                return view('clinic::backend.doctor.verify_action', compact('data'));
+            })
+            ->editColumn('user_type', function ($data) {
+                return '<span class="badge booking-status bg-primary-subtle p-3">' . str_replace("_", "", ucfirst($data->user_type)) . '</span>';
+            })
+            ->editColumn('full_name', function ($data) {
+                return $data->first_name . ' ' . $data->last_name;
+            })
+            ->filterColumn('full_name', function ($query, $keyword) {
+                if (!empty($keyword)) {
+                    $query->where('first_name', 'like', '%' . $keyword . '%')->orWhere('last_name', 'like', '%' . $keyword . '%');
+                }
+            })
+            ->orderColumn('full_name', function ($query, $order) {
+                $query->orderByRaw("CONCAT(first_name, ' ', last_name) $order");
+            }, 1)
+
+            ->editColumn('status', function ($data) {
+                $checked = '';
+                if ($data->status) {
+                    $checked = 'checked="checked"';
+                }
+
+                return '
+                    <div class="form-check form-switch ">
+                        <input type="checkbox" data-url="' . route('backend.doctor.update_status', $data->id) . '" data-token="' . csrf_token() . '" class="switch-status-change form-check-input"  id="datatable-row-' . $data->id . '"  name="status" value="' . $data->id . '" ' . $checked . '>
+                    </div>
+                ';
+            })
+
+            ->editColumn('updated_at', function ($data) {
+                $module_name = $this->module_name;
+
+                $diff = Carbon::now()->diffInHours($data->updated_at);
+
+                if ($diff < 25) {
+                    return $data->updated_at->diffForHumans();
+                } else {
+                    return $data->updated_at->isoFormat('llll');
+                }
+            })
+            ->orderColumns(['id'], '-:column $1');
+
+        // Custom Fields For export
+        $customFieldColumns = CustomField::customFieldData($datatable, User::CUSTOM_FIELD_MODEL, null);
+
+        return $datatable->rawColumns(array_merge(['action','clinic_id', 'status', 'is_banned', 'email_verified_at', 'check', 'image', 'user_type'], $customFieldColumns))
+            ->toJson();
+    }
+
+    public function nurse_index_data(Datatables $datatable, Request $request)
+    {
+
+        $module_name = $this->module_name;
+        $userId = auth()->id();
+        $query = User::role('nurse')->SetRole(auth()->user())->with('doctor', 'doctorclinic');
+
+
+        $filter = $request->filter;
+
+        if (isset($filter)) {
+
+            if (isset($filter['clinic_name'])) {
+
+                $query->whereHas('doctor', function ($query) use ($filter) {
+                    $query->whereHas('doctorclinic', function ($query) use ($filter) {
+                        $query->whereHas('clinics', function ($query) use ($filter) {
+                            $query->where('id', $filter['clinic_name']);
+                        });
+                    });
+                });
+            }
+            if(isset($filter['doctor_name'])) {
+                $fullName = $filter['doctor_name'];
+
+                $query->where(function($query) use ($fullName) {
+                    $query->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%$fullName%"]);
+                });
+            }
+            if(isset($filter['email'])) {
+
+                $query->where('email',$filter['email']);
+            }
+            if(isset($filter['contact'])) {
+
+                $query->where('mobile',$filter['contact']);
+            }
+            if(isset($filter['gender'])) {
+
+                $query->where('gender',$filter['gender']);
+            }
+            if(isset($filter['vendor_id'])) {
+
+                $query->whereHas('doctor', function ($query) use ($filter) {
+                            $query->where('vendor_id', $filter['vendor_id']);
+                });
+            }
+        }
+
+        if (isset($filter)) {
+            if (isset($filter['column_status'])) {
+                $query->where('status', $filter['column_status']);
+            }
+        }
+        $query->orderBy('created_at', 'desc');
+
+        $datatable = $datatable->eloquent($query)
+            ->addColumn('check', function ($row) {
+                return '<input type="checkbox" class="form-check-input select-table-row"  id="datatable-row-' . $row->id . '"  name="datatable_ids[]" value="' . $row->id . '" onclick="dataTableRowCheck(' . $row->id . ')">';
+            })
+            ->addColumn('action', function ($data) {
+
+                $other_settings = Setting::where('name', 'is_provider_push_notification')->first();
+
+                $enable_push_notification = 0;
+
+                if (!empty($other_settings)) {
+
+                    $enable_push_notification = $other_settings->val;
+                }
+                return view('clinic::backend.doctor.action_column', compact('data', 'enable_push_notification'));
+            })
+            // ->addColumn('doctor_session', function ($data) {
+            //     return " <button type='button' class='btn text-success p-0 fs-5' data-assign-module='" . $data->id . "' data-assign-target='#session-form-offcanvas' data-assign-event='employee_assign' class='fs-6 text-info border-0 bg-transparent text-nowrap' data-bs-toggle='tooltip' title='Session'>  <i class='ph ph-paper-plane-tilt'></i></button>";
+            // })
+            ->editColumn('doctor_id', function ($data) {
+                return view('clinic::backend.doctor.user_id', compact('data'));
+            })
+
+            ->editColumn('clinic_id', function ($data) {
+
                 return "<span class='bg-primary-subtle rounded tbl-badge'> <button type='button' data-assign-module='" . $data->id . "' data-assign-target='#clinic-list' data-assign-event='clinic_list' class='btn btn-sm p-0 text-primary' data-bs-toggle='tooltip' title='Clinic List'><b>$data->doctorclinic_count </b> </button></span>";
             })
             ->orderColumn('clinic_id', function ($query, $order) {
@@ -558,19 +770,21 @@ class DoctorController extends Controller
      */
     public function store(DoctorRequest $request)
     {
+
+
         $data = $request->except('profile_image');
         $data = $request->all();
 
         if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('demo_admin')) {
             $request->vendor_id = $request->filled('vendor_id') ? $request->vendor_id : auth()->user()->id;
-            
+
         } else {
             $request->vendor_id = auth()->user()->id;
-            
+
         }
         $data['password'] = Hash::make($data['password']);
         $data['email_verified_at'] = Carbon::now();
-        $data['user_type'] = 'doctor';
+        $data['user_type'] = $request->user_type;
 
         $data = User::create($data);
 
@@ -597,7 +811,7 @@ class DoctorController extends Controller
 
         $employee_id = $data['id'];
 
-        $roles = ['doctor'];
+        $roles = [$request->user_type];
 
         $data->syncRoles($roles);
 
@@ -673,7 +887,7 @@ class DoctorController extends Controller
                 $clinices = explode(",", $request->clinic_id);
 
                 foreach( $clinices as $clinic){
-                
+
                     foreach($services as $value) {
 
                         $clinic_service=ClinicServiceMapping::where('service_id',$value)->where('clinic_id',$clinic)->first();
@@ -691,11 +905,11 @@ class DoctorController extends Controller
 
                            DoctorServiceMapping::create($service_data);
 
-                        }   
+                        }
                     }
 
                 }
-              
+
             }
         }
         if (isset($request->commission_id) && $request->has('commission_id')) {
@@ -827,7 +1041,7 @@ class DoctorController extends Controller
                 $data->clearMediaCollection('profile_image');
             }
         }
-    
+
 
         DoctorDocument::where('doctor_id', $id)->forceDelete();
 
@@ -875,7 +1089,7 @@ class DoctorController extends Controller
                 $clinices = explode(",", $request->clinic_id);
 
                 foreach( $clinices as $clinic){
-                
+
                     foreach($services as $value) {
 
                         $clinic_service=ClinicServiceMapping::where('service_id',$value)->where('clinic_id',$clinic)->first();
@@ -893,16 +1107,16 @@ class DoctorController extends Controller
 
                            DoctorServiceMapping::create($service_data);
 
-                        }   
+                        }
                     }
 
                 }
-              
+
             }
         }
 
 
-        
+
         $existingClinicIds = DoctorClinicMapping::where('doctor_id', $id)->pluck('clinic_id')->toArray();
         $newClinicIds = $request->has('clinic_id') && !empty($request->clinic_id) ? explode(",", $request->clinic_id) : [];
         $clinicsToRemove = array_diff($existingClinicIds, $newClinicIds);
@@ -965,15 +1179,15 @@ class DoctorController extends Controller
         return response()->json(['message' => $message, 'status' => true], 200);
     }
     public function doctorDeatails(Request $request, $id){
-         
+
         $data = User::with('doctor','profile','media','employeeAppointment','doctor_service','rating')->findOrFail($id);
         $doctor_session = DoctorSession::where('doctor_id', $data->id)->get();
-    
+
         $data->total_appointment = $data->employeeAppointment->count();
         $data->specialization = optional($data->profile)->expert ? optional($data->profile)->expert : '-';
         $data->total_sessions = $doctor_session->count();
         $data->experience = optional($data->doctor)->experience ? optional($data->doctor)->experience : 0;
-        
+
         $data->doctor_service = $data->doctor_service;
 
         $data->rating = $data->rating;
@@ -1084,10 +1298,10 @@ class DoctorController extends Controller
 
             ->editColumn('review_msg', function ($data) {
                 return '<div class="text-desc">'.$data->review_msg.'</div>';
-            })   
+            })
             ->editColumn('rating', function ($data) {
                 return $data->rating - floor($data->rating) > 0 ? number_format($data->rating, 1) : $data->rating;
-            })            
+            })
 
             ->filterColumn('user_id', function ($query, $keyword) {
                 if (!empty($keyword)) {
@@ -1173,7 +1387,7 @@ class DoctorController extends Controller
         return response()->json(['message' => $message, 'status' => true], 200);
     }
     public function user_list(Request $request){
-        
+
         $data = User::query();
 
 

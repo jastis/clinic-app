@@ -57,6 +57,8 @@ return [
     'clinic_center' => 'Clinic Centers',
     'center' =>'Centers',
     'doctor' => 'Doctors',
+    'nurse'=>'Nurse',
+    'doctor-nurse'=>'Doctors & Nurses',
     'subscription' => 'Subscription',
     'appointment' => 'Appointment list',
     'other_Clinic' => 'other clinic child menu list',
@@ -98,6 +100,6 @@ return [
     'vendor_earning' => 'Clinic Admin Earning',
     'doctor_payout' => 'Doctor Payout',
     'vendor_payout'=> 'Clinic Admin Payout',
-    
+
     'problems' => 'Problems',
 ];
