@@ -43,7 +43,7 @@ Route::group(['prefix' => 'app', 'as' => 'backend.', 'middleware' => ['auth']], 
     Route::group(['prefix' => 'clinic-session', 'as' => 'clinic-session.'], function () {
         Route::get('index_list', [ClinicSessionController::class, 'index_list'])->name('index_list');
         Route::get('index_data', [ClinicSessionController::class, 'index_data'])->name('index_data');
-        
+
 
     });
 
@@ -96,7 +96,7 @@ Route::group(['prefix' => 'app', 'as' => 'backend.', 'middleware' => ['auth']], 
     });
     Route::resource('system-service', SystemServiceController::class);
 
-    
+
 
 
 
@@ -110,10 +110,39 @@ Route::group(['prefix' => 'app', 'as' => 'backend.', 'middleware' => ['auth']], 
             Route::post('verify-receptionist/{id}', [ReceptionistController::class, 'verify_receptionist'])->name('verify-receptionist');
             Route::get('export', [ReceptionistController::class, 'export'])->name('export');
         });
-    
+
         Route::resource('receptionist', ReceptionistController::class);
 
+ // doctor Routes
+ Route::group(['prefix' => 'nurse', 'as' => 'nurse.'], function () {
+    Route::get('/', [DoctorController::class, 'nurse_index'])->name('index');
+    Route::get('commision_list', [DoctorController::class, 'commision_list'])->name('commision_list');
+    Route::get('export', [DoctorController::class, 'export'])->name('export');
+    Route::get('employee_list', [DoctorController::class, 'employee_list'])->name('employee_list');
+    Route::get('get-available-slot', [DoctorController::class, 'availableSlot'])->name('get_available_slot');
+    Route::post('change-password', [DoctorController::class, 'change_password'])->name('change_password');
+    Route::post('update-status/{id}', [DoctorController::class, 'update_status'])->name('update_status');
+    Route::post('block-employee/{id}', [DoctorController::class, 'block_employee'])->name('block-employee');
+    Route::get('verify-doctor/{id}', [DoctorController::class, 'verify_doctor'])->name('verify-doctor');
+    Route::get('review_data', [DoctorController::class, 'review_data'])->name('review_data');
+    Route::delete('destroy_review/{id}', [DoctorController::class, 'destroy_review'])->name('destroy_review');
+    Route::get('index_data', [DoctorController::class, 'nurse_index_data'])->name('index_data');
+    Route::get('trashed', [DoctorController::class, 'trashed'])->name('trashed');
+    Route::get('trashed/{id}', [DoctorController::class, 'restore'])->name('restore');
+    Route::post('bulk-action', [DoctorController::class, 'bulk_action'])->name('bulk_action');
+    // Route::post('bulk-action-review', [DoctorController::class, 'bulk_action_review'])->name('bulk_action_review');
+    Route::get('/type/{type}', [DoctorController::class, 'employees_type_data'])->name('employee_type');
+    Route::post('/send-push-notification', [DoctorController::class, 'send_push_notification'])->name('send-push-notification');
+    Route::get('/assign-doctor-list', [ClinicsServiceController::class, 'assign_doctor_list'])->name('assign_doctor_list');
+    // Route::get('view', [DoctorController::class, 'view'])->name('view');
+    Route::get('doctor-details/{id}', [DoctorController::class, 'doctorDeatails'])->name('doctorDeatails');
+    Route::get('review_data', [DoctorController::class, 'review_data'])->name('review_data');
+    Route::post('bulk-action-review', [DoctorController::class, 'bulk_action_review'])->name('bulk_action_review');
+    Route::delete('destroy_review/{id}', [DoctorController::class, 'destroy_review'])->name('destroy_review');
+    Route::get('service_list', [DoctorController::class, 'service_list'])->name('service_list');
+    Route::get('user-list', [DoctorController::class, 'user_list'])->name('user_list');
 
+ });
 
 
 
@@ -154,6 +183,7 @@ Route::group(['prefix' => 'app', 'as' => 'backend.', 'middleware' => ['auth']], 
 
 
     Route::group(['prefix' => 'doctor-session', 'as' => 'doctor-session.'], function () {
+
         Route::get('index_list', [DoctorSessionController::class, 'index_list'])->name('index_list');
         Route::get('index_data', [DoctorSessionController::class, 'index_data'])->name('index_data');
         Route::post('bulk-action', [DoctorSessionController::class, 'bulk_action'])->name('bulk_action');
@@ -162,9 +192,9 @@ Route::group(['prefix' => 'app', 'as' => 'backend.', 'middleware' => ['auth']], 
         Route::get('day-list', [DoctorSessionController::class, 'session_list'])->name('session_list');
         Route::get('edit-session-data', [DoctorSessionController::class, 'EditSessionData']);
         Route::get('edit-doctor-mapping', [DoctorSessionController::class, 'EditDoctorMapping']);
-        
 
-        
+
+
     });
 
     Route::resource('doctor-session', DoctorSessionController::class);
