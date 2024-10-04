@@ -237,6 +237,11 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         return $this->hasOne(Doctor::class,'doctor_id');
     }
 
+    public function subscriptionsnew()
+    {
+        return $this->hasMany(SubscriptionNew::class);
+    }
+
     public function doctor_service()
     {
         return $this->hasMany(DoctorServiceMapping::class, 'doctor_id')->with('clinicservice');
