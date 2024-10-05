@@ -16,6 +16,7 @@ return [
     'customers' => 'Customers',
     'reviews' => 'Reviews',
     'finance' => 'Finance',
+    'exercise' => 'Exercise Management',
     'tax' => 'Tax',
     'staff_earnings' => 'Staff Earnings',
     'reports' => 'Reports',
