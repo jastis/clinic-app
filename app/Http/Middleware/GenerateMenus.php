@@ -44,7 +44,15 @@ class GenerateMenus
                     'order' => 0,
                 ]);
                 
-              
+
+                $this->mainRoute($menu, [
+                    'icon' => 'ph ph-calendar-heart',
+                    'title' => __('sidebar.exercise'),
+                    'route' => 'exercises.index',
+                    // 'active' => ['app/specializations'],
+                    'permission' => ['view_specialization'],
+                    'order' => 0,
+                ]);
                 
                 
                 

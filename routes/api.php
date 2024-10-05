@@ -14,6 +14,9 @@ use App\Http\Controllers\NewSubscriptionController;
 use App\Http\Controllers\PaystackSubscriptionController;
 
 use App\Http\Controllers\API\SubscriptionNewController;
+use App\Http\Controllers\GetAppointmentController;
+
+//Route::get('/appointments/{user_id}', [GetAppointmentController::class, 'getAppointments']);
 
 
 
@@ -35,6 +38,7 @@ use App\Http\Controllers\API\SubscriptionNewController;
 
 
 // Add this route in your routes/web.php or routes/api.php
+Route::get('/appointments/{user_id}', [GetAppointmentController::class, 'getAppointments']);
 Route::get('/paystack/callback', [SubscriptionNewController::class, 'handlePaystackCallback'])->name('paystack.callback');
 
 
