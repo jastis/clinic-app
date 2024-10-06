@@ -2,7 +2,7 @@
 
 return [
     'lbl_clinic_name' => 'Location Name',
-    'singular_title' => 'Clinic',
+    'singular_title' => 'Clinic ',
     'lbl_contact_number'=>'Contact Number',
     'lbl_address' => 'Address',
     'lbl_country' => 'Country',
