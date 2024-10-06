@@ -390,7 +390,164 @@ class DoctorController extends Controller
         $userId = auth()->id();
         $query = User::role('doctor')->SetRole(auth()->user())->with('doctor', 'doctorclinic');
 
+
+        $filter = $request->filter;
+
+        if (isset($filter)) {
+
+            if (isset($filter['clinic_name'])) {
+
+                $query->whereHas('doctor', function ($query) use ($filter) {
+                    $query->whereHas('doctorclinic', function ($query) use ($filter) {
+                        $query->whereHas('clinics', function ($query) use ($filter) {
+                            $query->where('id', $filter['clinic_name']);
+                        });
+                    });
+                });
+            }
+            if(isset($filter['doctor_name'])) {
+                $fullName = $filter['doctor_name'];
+
+                $query->where(function($query) use ($fullName) {
+                    $query->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%$fullName%"]);
+                });
+            }
+            if(isset($filter['email'])) {
+
+                $query->where('email',$filter['email']);
+            }
+            if(isset($filter['contact'])) {
+
+                $query->where('mobile',$filter['contact']);
+            }
+            if(isset($filter['gender'])) {
+
+                $query->where('gender',$filter['gender']);
+            }
+            if(isset($filter['vendor_id'])) {
+
+                $query->whereHas('doctor', function ($query) use ($filter) {
+                            $query->where('vendor_id', $filter['vendor_id']);
+                });
+            }
+        }
+
+        if (isset($filter)) {
+            if (isset($filter['column_status'])) {
+                $query->where('status', $filter['column_status']);
+            }
+        }
+        $query->orderBy('created_at', 'desc');
+
+        $datatable = $datatable->eloquent($query)
+            ->addColumn('check', function ($row) {
+                return '<input type="checkbox" class="form-check-input select-table-row"  id="datatable-row-' . $row->id . '"  name="datatable_ids[]" value="' . $row->id . '" onclick="dataTableRowCheck(' . $row->id . ')">';
+            })
+            ->addColumn('action', function ($data) {
+
+                $other_settings = Setting::where('name', 'is_provider_push_notification')->first();
+
+                $enable_push_notification = 0;
+
+                if (!empty($other_settings)) {
+
+                    $enable_push_notification = $other_settings->val;
+                }
+                return view('clinic::backend.doctor.action_column', compact('data', 'enable_push_notification'));
+            })
+            // ->addColumn('doctor_session', function ($data) {
+            //     return " <button type='button' class='btn text-success p-0 fs-5' data-assign-module='" . $data->id . "' data-assign-target='#session-form-offcanvas' data-assign-event='employee_assign' class='fs-6 text-info border-0 bg-transparent text-nowrap' data-bs-toggle='tooltip' title='Session'>  <i class='ph ph-paper-plane-tilt'></i></button>";
+            // })
+            ->editColumn('doctor_id', function ($data) {
+                return view('clinic::backend.doctor.user_id', compact('data'));
+            })
+
+            ->editColumn('clinic_id', function ($data) {
+
+                return "<span class='bg-primary-subtle rounded tbl-badge'> <button type='button' data-assign-module='" . $data->id . "' data-assign-target='#clinic-list' data-assign-event='clinic_list' class='btn btn-sm p-0 text-primary' data-bs-toggle='tooltip' title='Clinic List'><b>$data->doctorclinic_count </b> </button></span>";
+            })
+            ->orderColumn('clinic_id', function ($query, $order) {
+                $query->whereHas('doctor', function ($query) use ($order){
+                    $query->whereHas('doctorclinic', function ($query) use ($order) {
+                        $query->whereHas('clinics', function ($query) use ($order) {
+                            $query->orderBy('name', $order);
+                        });
+                    });
+                });
+            }, 1)
+            ->filterColumn('doctor_id', function ($query, $keyword) {
+                if (!empty($keyword)) {
+                    $query->where('first_name', 'like', '%' . $keyword . '%')->orWhere('last_name', 'like', '%' . $keyword . '%')->orWhere('email', 'like', '%' . $keyword . '%');
+                }
+            })
+            ->orderColumn('doctor_id', function ($query, $order) {
+                $query->orderByRaw("CONCAT(first_name, ' ', last_name) $order");
+            }, 1)
+            ->editColumn('image', function ($data) {
+                return "<img src='" . $data->profile_image . "'class='avatar avatar-50 rounded-pill'>";
+            })
+
+            ->editColumn('email_verified_at', function ($data) {
+
+                return view('clinic::backend.doctor.verify_action', compact('data'));
+            })
+            ->editColumn('user_type', function ($data) {
+                return '<span class="badge booking-status bg-primary-subtle p-3">' . str_replace("_", "", ucfirst($data->user_type)) . '</span>';
+            })
+            ->editColumn('full_name', function ($data) {
+                return $data->first_name . ' ' . $data->last_name;
+            })
+            ->filterColumn('full_name', function ($query, $keyword) {
+                if (!empty($keyword)) {
+                    $query->where('first_name', 'like', '%' . $keyword . '%')->orWhere('last_name', 'like', '%' . $keyword . '%');
+                }
+            })
+            ->orderColumn('full_name', function ($query, $order) {
+                $query->orderByRaw("CONCAT(first_name, ' ', last_name) $order");
+            }, 1)
+
+            ->editColumn('status', function ($data) {
+                $checked = '';
+                if ($data->status) {
+                    $checked = 'checked="checked"';
+                }
+
+                return '
+                    <div class="form-check form-switch ">
+                        <input type="checkbox" data-url="' . route('backend.doctor.update_status', $data->id) . '" data-token="' . csrf_token() . '" class="switch-status-change form-check-input"  id="datatable-row-' . $data->id . '"  name="status" value="' . $data->id . '" ' . $checked . '>
+                    </div>
+                ';
+            })
+
+            ->editColumn('updated_at', function ($data) {
+                $module_name = $this->module_name;
+
+                $diff = Carbon::now()->diffInHours($data->updated_at);
+
+                if ($diff < 25) {
+                    return $data->updated_at->diffForHumans();
+                } else {
+                    return $data->updated_at->isoFormat('llll');
+                }
+            })
+            ->orderColumns(['id'], '-:column $1');
+
+        // Custom Fields For export
+        $customFieldColumns = CustomField::customFieldData($datatable, User::CUSTOM_FIELD_MODEL, null);
+
+        return $datatable->rawColumns(array_merge(['action','clinic_id', 'status', 'is_banned', 'email_verified_at', 'check', 'image', 'user_type'], $customFieldColumns))
+            ->toJson();
+    }
+// Nurse
+    public function nurse_index_data(Datatables $datatable, Request $request)
+    {
+
+        $module_name = $this->module_name;
+        $userId = auth()->id();
+        $query = User::role('nurse')->SetRole(auth()->user())->with('doctor', 'doctorclinic');
+
      
+
         $filter = $request->filter;
    
         if (isset($filter)) {
