@@ -1,11 +1,5 @@
 /*!
-  * shared v9.13.1
-  * (c) 2024 kazuya kawaguchi
-  * Released under the MIT License.
-  */
-
-/*!
-  * vue-i18n v9.13.1
+  * shared v9.14.0
   * (c) 2024 kazuya kawaguchi
   * Released under the MIT License.
   */
@@ -37,6 +31,12 @@
  * @license  MIT
  */
 
+/*!
+ * pinia v2.2.2
+ * (c) 2024 Eduardo San Martin Morote
+ * @license MIT
+ */
+
 /*! #__NO_SIDE_EFFECTS__ */
 
 /*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */
@@ -48,7 +48,7 @@
 /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
 
 /**
-  * vee-validate v4.12.8
+  * vee-validate v4.13.2
   * (c) 2024 Abdelrahman Awad
   * @license MIT
   */
@@ -63,31 +63,31 @@
  */
 
 /**
-* @vue/compiler-core v3.4.27
+* @vue/compiler-core v3.5.6
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
 
 /**
-* @vue/reactivity v3.4.27
+* @vue/reactivity v3.5.6
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
 
 /**
-* @vue/runtime-core v3.4.27
+* @vue/runtime-core v3.5.6
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
 
 /**
-* @vue/runtime-dom v3.4.27
+* @vue/runtime-dom v3.5.6
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
 
 /**
-* @vue/shared v3.4.27
+* @vue/shared v3.5.6
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/

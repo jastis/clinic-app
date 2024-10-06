@@ -113,7 +113,7 @@ Route::group(['prefix' => 'app', 'as' => 'backend.', 'middleware' => ['auth']], 
 
         Route::resource('receptionist', ReceptionistController::class);
 
- // doctor Routes
+ // Nurse Route
  Route::group(['prefix' => 'nurse', 'as' => 'nurse.'], function () {
     Route::get('/', [DoctorController::class, 'nurse_index'])->name('index');
     Route::get('commision_list', [DoctorController::class, 'commision_list'])->name('commision_list');

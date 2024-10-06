@@ -594,7 +594,7 @@ class DoctorController extends Controller
         return $datatable->rawColumns(array_merge(['action','clinic_id', 'status', 'is_banned', 'email_verified_at', 'check', 'image', 'user_type'], $customFieldColumns))
             ->toJson();
     }
-
+// Nurse
     public function nurse_index_data(Datatables $datatable, Request $request)
     {
 

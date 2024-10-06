@@ -149,7 +149,7 @@ class GenerateMenus
             if (!auth()->user()->hasRole(['doctor'])) {
                 $doctor = $this->parentMenu($menu, [
                     'icon' => 'ph ph-stethoscope',
-                    'title' => __('sidebar.doctor-nurse'),
+                    'title' => __('sidebar.doctor-nurse '),
                     'route' => 'backend.doctor.index',
                     'permission' => ['view_doctors_session'],
                     'nickname' => 'doctor',
