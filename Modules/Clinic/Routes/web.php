@@ -43,7 +43,7 @@ Route::group(['prefix' => 'app', 'as' => 'backend.', 'middleware' => ['auth']], 
     Route::group(['prefix' => 'clinic-session', 'as' => 'clinic-session.'], function () {
         Route::get('index_list', [ClinicSessionController::class, 'index_list'])->name('index_list');
         Route::get('index_data', [ClinicSessionController::class, 'index_data'])->name('index_data');
-
+        
 
     });
 
@@ -96,7 +96,7 @@ Route::group(['prefix' => 'app', 'as' => 'backend.', 'middleware' => ['auth']], 
     });
     Route::resource('system-service', SystemServiceController::class);
 
-
+    
 
 
 
@@ -110,8 +110,9 @@ Route::group(['prefix' => 'app', 'as' => 'backend.', 'middleware' => ['auth']], 
             Route::post('verify-receptionist/{id}', [ReceptionistController::class, 'verify_receptionist'])->name('verify-receptionist');
             Route::get('export', [ReceptionistController::class, 'export'])->name('export');
         });
-
+    
         Route::resource('receptionist', ReceptionistController::class);
+
 
  // Nurse Route
  Route::group(['prefix' => 'nurse', 'as' => 'nurse.'], function () {
@@ -143,6 +144,7 @@ Route::group(['prefix' => 'app', 'as' => 'backend.', 'middleware' => ['auth']], 
     Route::get('user-list', [DoctorController::class, 'user_list'])->name('user_list');
 
  });
+
 
 
 
@@ -183,7 +185,6 @@ Route::group(['prefix' => 'app', 'as' => 'backend.', 'middleware' => ['auth']], 
 
 
     Route::group(['prefix' => 'doctor-session', 'as' => 'doctor-session.'], function () {
-
         Route::get('index_list', [DoctorSessionController::class, 'index_list'])->name('index_list');
         Route::get('index_data', [DoctorSessionController::class, 'index_data'])->name('index_data');
         Route::post('bulk-action', [DoctorSessionController::class, 'bulk_action'])->name('bulk_action');
@@ -192,9 +193,9 @@ Route::group(['prefix' => 'app', 'as' => 'backend.', 'middleware' => ['auth']], 
         Route::get('day-list', [DoctorSessionController::class, 'session_list'])->name('session_list');
         Route::get('edit-session-data', [DoctorSessionController::class, 'EditSessionData']);
         Route::get('edit-doctor-mapping', [DoctorSessionController::class, 'EditDoctorMapping']);
+        
 
-
-
+        
     });
 
     Route::resource('doctor-session', DoctorSessionController::class);
