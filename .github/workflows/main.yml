@@ -27,7 +27,6 @@ jobs:
         run: |
           composer install  --optimize-autoloader
           npm install
-          npm run prod
 
       - name: 📂 Sync files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
