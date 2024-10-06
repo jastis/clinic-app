@@ -13,6 +13,11 @@ use App\Http\Controllers\Appointment2Controller;
 use App\Http\Controllers\NewSubscriptionController;
 use App\Http\Controllers\PaystackSubscriptionController;
 
+use App\Http\Controllers\API\SubscriptionNewController;
+use App\Http\Controllers\GetAppointmentController;
+
+//Route::get('/appointments/{user_id}', [GetAppointmentController::class, 'getAppointments']);
+
 
 
 
@@ -30,6 +35,16 @@ use App\Http\Controllers\PaystackSubscriptionController;
 
   // Initialize the subscription
   // Webhook to handle payment notification from Paystack
+
+
+// Add this route in your routes/web.php or routes/api.php
+Route::get('/appointments/{user_id}', [GetAppointmentController::class, 'getAppointments']);
+Route::get('/paystack/callback', [SubscriptionNewController::class, 'handlePaystackCallback'])->name('paystack.callback');
+
+
+  Route::post('/subscription/create', [SubscriptionNewController::class, 'createSubscription']);
+Route::get('/subscription/callback', [SubscriptionNewController::class, 'handlePaystackCallback']);
+
 Route::post('/paystack/webhook', [PaystackSubscriptionController::class, 'webhook'])->name('subscription.callback');
 Route::post('/paystacksubscribe', [PaystackSubscriptionController::class, 'subscribe']);
 Route::get('getservices', [NewSubscriptionController::class, 'getserviceapi']);

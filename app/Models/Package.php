@@ -17,4 +17,9 @@ class Package extends Model
     {
         return $this->belongsTo(Service::class);
     }
+
+    public function subscriptions()
+    {
+        return $this->hasMany(SubscriptionNew::class);
+    }
 }

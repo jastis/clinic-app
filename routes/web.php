@@ -20,6 +20,11 @@ use App\Http\Controllers\SubscriptionController2;
 use App\Http\Controllers\NewSubscriptionController;
 use App\Http\Controllers\DoctorAssignmentController;
 use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\ExerciseController;
+
+
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -31,7 +36,7 @@ use App\Http\Controllers\PrescriptionController;
 |
 */
 
-
+Route::resource('exercises', ExerciseController::class)->middleware('auth');
 // Route::prefix('doctor')->middleware('auth')->group(function () {
     Route::get('assigned-appointments', [PrescriptionController::class, 'index'])->name('doctor.prescriptions.index');
     Route::get('prescription/create/{appointment}', [PrescriptionController::class, 'create'])->name('doctor.prescriptions.create');

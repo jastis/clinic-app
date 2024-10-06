@@ -43,11 +43,19 @@ class GenerateMenus
                     'permission' => ['view_specialization'],
                     'order' => 0,
                 ]);
+                
 
-
-
-
-
+                $this->mainRoute($menu, [
+                    'icon' => 'ph ph-calendar-heart',
+                    'title' => __('sidebar.exercise'),
+                    'route' => 'exercises.index',
+                    // 'active' => ['app/specializations'],
+                    'permission' => ['view_specialization'],
+                    'order' => 0,
+                ]);
+                
+                
+                
                 // $doctor = $this->parentMenu($menu, [
                 //     'icon' => 'ph ph-stethoscope',
                 //     'title' => __('sidebar.doctor'),
@@ -55,10 +63,10 @@ class GenerateMenus
                 //     'permission' => ['view_doctors_session'],
                 //     'nickname' => 'doctor',
                 //     'order' => 0,
-
+               
             } else if (auth()->user()->hasRole('doctor')) {
                 $this->staticMenu($menu, ['title' => 'MAIN', 'order' => 0]);
-
+                
                 $this->mainRoute($menu, [
                     'icon' => 'ph ph-squares-four',
                     'title' => __('sidebar.dashboard'),
@@ -149,7 +157,9 @@ class GenerateMenus
             if (!auth()->user()->hasRole(['doctor'])) {
                 $doctor = $this->parentMenu($menu, [
                     'icon' => 'ph ph-stethoscope',
+
                     'title' => __('sidebar.doctor-nurse '),
+                    'title' => __('sidebar.doctor'),
                     'route' => 'backend.doctor.index',
                     'permission' => ['view_doctors_session'],
                     'nickname' => 'doctor',
@@ -163,16 +173,6 @@ class GenerateMenus
                     'permission' => ['view_doctors'],
                     'order' => 0,
                 ]);
-
-                $this->childMain($doctor, [
-                    'icon' => 'ph ph-stethoscope',
-                    'title' => __('sidebar.nurse'),
-                    'route' => 'backend.nurse.index',
-                    'active' => 'app/nurse',
-                    'permission' => ['view_doctors'],
-                    'order' => 0,
-                ]);
-
                 $this->childMain($doctor, [
                     'icon' => 'ph ph-clock',
                     'title' => __('clinic.doctor_session'),
@@ -182,7 +182,6 @@ class GenerateMenus
                     'order' => 0,
                 ]);
             }
-
 
             if (auth()->user()->hasRole(['doctor'])) {
                 $this->mainRoute($menu, [
@@ -220,7 +219,7 @@ class GenerateMenus
                 'permission' => ['view_encounter'],
                 'order' => 0,
             ]);
-
+           
                 $this->childMain($encounter, [
                     'icon' => 'ph ph-layout',
                     'title' => __('sidebar.encounter_template'),
